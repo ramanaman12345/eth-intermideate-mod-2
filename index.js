@@ -116,7 +116,7 @@ export default function HomePage() {
     <main className="container">
       <header>
         <h1>WELCOME TO MY ATM ** Crypto-Tech **</h1>
-        <p>What do you want to do here:</p>
+        <p>Need to Transact some ETH:</p>
         <p>please select your options:-</p>
       </header>
       {initUser()}
@@ -130,7 +130,7 @@ export default function HomePage() {
             font-family: "Times New Roman", serif;
             border: 1px solid black;
             border-radius: 20px;
-            background-image: url("https://i.pinimg.com/originals/75/fc/f7/75fcf7bf71f9ce460132470527a44a73.jpg");
+            background-image: url("image url hidded due to privacy issue");
             height: 700px;
             width: 1500px;
             opacity: 0.9;
