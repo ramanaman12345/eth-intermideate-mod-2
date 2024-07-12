@@ -1,14 +1,20 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import atm_abi from "../artifacts/contracts/Assessment.sol/Assessment.json";
+import atm_abi from "../artifacts/contracts/ramanAssessment.sol/ramanAssessment.json";
 
 export default function HomePage() {
   const [ethWallet, setEthWallet] = useState(undefined);
   const [account, setAccount] = useState(undefined);
   const [atm, setATM] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
+  const [ownerName,setOwnerName] = useState("Raman");
+  const [ownerCity, setOwnerCity] = useState("Chandigarh University");
+  const [ownerStatus, setOwnerStatus] = useState("Eligible Owner");
+  const [add,setAdd]=useState(9);
+  const [inputA, setInputA] = useState("");
+  const [inputB, setInputB] = useState("");
 
-  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
   const atmABI = atm_abi.abi;
 
   const getWallet = async () => {
@@ -74,7 +80,43 @@ export default function HomePage() {
       getBalance(account[0]);
     }
   };
- 
+  const checkOwnerName = async () => {
+    if (atm) {
+      let ownerName = await atm.checkOwnerName();
+      setOwnerName("Raman");
+    }
+  }
+
+  const checkOwnerCity = async () => {
+    if (atm) {
+      let ownerCity = await atm.checkOwnerCity();
+      setOwnerCity("Chandigarh University");
+    }
+  }
+
+
+  const checkOwnerStatus = async () => {
+    if (atm) {
+      let ownerStatus = await atm.checkOwnerStatus();
+      setOwnerStatus("Eligible Owner");
+    }
+  }
+  const addition = async () => {
+    if (atm) {
+      const a = parseInt(inputA);
+      const b = parseInt(inputB);
+      const result = await atm.addition(a,b);
+      setAdd(result);
+    }
+}  
+const handleInputAChange = (event) => {
+  setInputA(event.target.value);
+};
+
+const handleInputBChange = (event) => {
+  setInputB(event.target.value);
+};
+
 
   const initUser = () => {
     // Check if user has Metamask
@@ -99,12 +141,35 @@ export default function HomePage() {
       <div class="overlay">
         <p>Your Balance: {balance}</p>
         <p>Your Account: {account}</p>
+        <p style={{ fontFamily: "Sans-serif" }}>Owner Name: {ownerName}</p>
+          <p style={{ fontFamily: "Sans-serif" }}>Owner City: {ownerCity}</p>
+          <p style={{ fontFamily: "Sans-serif" }}>Owner Status: {ownerStatus}</p>
         <button onClick={deposit}>Deposit 1 ETH</button>
         <button onClick={withdraw}>Withdraw 1 ETH</button>
         <button onClick={async () => {
           alert((await atm.getBalanceFromWalletAddress(prompt("Wallet Address: "))).toNumber())
         }}>Check Others Balance</button>
+        <h2>Calculator for Mathematics</h2>
+          <p style={{ fontFamily: "Sans-serif" }}>Add: {add ? add.toString() : ""}</p>
+
+          <input
+            type="number"
+            placeholder="Enter the value of first variable A: "
+            value={inputA}
+            onChange={handleInputAChange} 
+            />
+          <input
+            type="number"
+            placeholder="Enter the value of the second variable B: "
+            value={inputB}
+            onChange={handleInputBChange} 
+            />
+
+          <button style={{ backgroundColor: "yellow" }} onClick={addition}>
+            Add
+          </button>
       </div>
+      
     );
   };
 
@@ -115,9 +180,9 @@ export default function HomePage() {
   return (
     <main className="container">
       <header>
-        <h1>WELCOME TO MY ATM ** Crypto-Tech **</h1>
-        <p>Need to Transact some ETH:</p>
-        <p>please select your options:-</p>
+        <h1>WELCOME TO MY ATM ** CRYPTO TECH **</h1>
+        <p>Let's Crypto Tech</p>
+        <p>please select your Service :-</p>
       </header>
       {initUser()}
       <style jsx>
@@ -130,11 +195,11 @@ export default function HomePage() {
             font-family: "Times New Roman", serif;
             border: 1px solid black;
             border-radius: 20px;
-            background-image: url("image url hidded due to privacy issue");
-            height: 700px;
+            background-image: url("https://i.pinimg.com/originals/75/fc/f7/75fcf7bf71f9ce460132470527a44a73.jpg");
+            height: 900px;
             width: 1500px;
             opacity: 0.9;
-            font-weight: 900
+            font-weight: 950
           }
 
           header {
@@ -143,7 +208,7 @@ export default function HomePage() {
 
           h1 {
             font-family: "Arial", serif;
-            font-size: 70px;
+            font-size: 60px;
             margin-bottom: 20px;
             font-weight: 700
           }
@@ -151,7 +216,7 @@ export default function HomePage() {
           p {
             font-size: 22px;
             margin-bottom: 20px;
-            font-weight: 700
+            font-weight: 1000
           }
 
           button {
