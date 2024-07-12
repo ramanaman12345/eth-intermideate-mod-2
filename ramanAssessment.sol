@@ -3,11 +3,12 @@ pragma solidity ^0.8.16;
 
 //import "hardhat/console.sol";
 
-contract Assessment {  
+contract ramanAssessment {  
     event Deposit(uint256 amount);
     event Withdraw(uint256 amount);
     mapping(address => uint256) public balanceOf;
-    mapping(address => address) public ownerOf;                                                                                                                                         
+    mapping(address => address) public ownerOf;  
+                                                                                                                                           
       
     function getBalanceFromWalletAddress(address walletAddress) public view returns(uint256) {
     return balanceOf[walletAddress];
@@ -39,5 +40,24 @@ contract Assessment {
     address account = msg.sender;
     return balanceOf[account];
     }
+    function ownerName()public pure returns(string memory){
+            string memory name="Raman";
+            return name;
+        }
+
+        function ownerCity()public pure returns(string memory){
+            string memory city="Chandigarh University";
+            return city;
+        }
+        
+        function ownerStatus()public pure returns(string memory){
+            string memory status="Eligible Owner";
+            return status;
+        }
+
+        function addition(uint a, uint b) public pure returns(uint){
+                return a+b;
+            }
+        }
  
-}
+
