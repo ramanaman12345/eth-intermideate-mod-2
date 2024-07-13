@@ -7,10 +7,10 @@ export default function HomePage() {
   const [account, setAccount] = useState(undefined);
   const [atm, setATM] = useState(undefined);
   const [balance, setBalance] = useState(undefined);
-  const [ownerName,setOwnerName] = useState("Raman");
+  const [ownerName, setOwnerName] = useState("Raman");
   const [ownerCity, setOwnerCity] = useState("Chandigarh University");
   const [ownerStatus, setOwnerStatus] = useState("Eligible Owner");
-  const [add,setAdd]=useState(9);
+  const [add, setAdd] = useState("");
   const [inputA, setInputA] = useState("");
   const [inputB, setInputB] = useState("");
 
@@ -23,15 +23,15 @@ export default function HomePage() {
     }
 
     if (ethWallet) {
-      const account = await ethWallet.request({ method: "eth_accounts" });
-      handleAccount(account);
+      const accounts = await ethWallet.request({ method: "eth_accounts" });
+      handleAccount(accounts);
     }
   };
 
-  const handleAccount = (account) => {
-    if (account) {
-      console.log("Account connected: ", account);
-      setAccount(account);
+  const handleAccount = (accounts) => {
+    if (accounts && accounts.length > 0) {
+      console.log("Account connected: ", accounts[0]);
+      setAccount(accounts[0]);
     } else {
       console.log("No account is found like this");
     }
@@ -50,7 +50,7 @@ export default function HomePage() {
   };
 
   const getATMContract = () => {
-    const provider = new ethers.providers.Web3Provider(ethWallet);
+    const provider = new ethers.providers.Web3Provider(ethWallet, "any");
     const signer = provider.getSigner();
     const atmContract = new ethers.Contract(contractAddress, atmABI, signer);
 
@@ -59,64 +59,67 @@ export default function HomePage() {
 
   const getBalance = async (walletaddress) => {
     if (atm) {
-      alert(walletaddress)
+      alert(walletaddress);
       setBalance((await atm.getBalanceFromWalletAddress(walletaddress)).toNumber());
     }
   };
 
   const deposit = async () => {
-    alert(account)
+    alert(account);
     if (atm) {
-      let tx = await atm.depositamount(1, { gasLimit: 3e7 });
+      let tx = await atm.depositamount(1, { gasLimit: 3000000 });
       await tx.wait();
-      getBalance(account[0]);
+      getBalance(account);
     }
   };
 
   const withdraw = async () => {
     if (atm) {
-      let tx = await atm.withdrawamount(1, { gasLimit: 3e7 });
+      let tx = await atm.withdrawamount(1, { gasLimit: 3000000 });
       await tx.wait();
-      getBalance(account[0]);
+      getBalance(account);
     }
   };
+
   const checkOwnerName = async () => {
     if (atm) {
-      let ownerName = await atm.checkOwnerName();
-      setOwnerName("Raman");
+      let ownerName = await atm.ownerName();
+      setOwnerName(ownerName);
     }
-  }
+  };
 
   const checkOwnerCity = async () => {
     if (atm) {
-      let ownerCity = await atm.checkOwnerCity();
-      setOwnerCity("Chandigarh University");
+      let ownerCity = await atm.ownerCity();
+      setOwnerCity(ownerCity);
     }
-  }
-
+  };
 
   const checkOwnerStatus = async () => {
     if (atm) {
-      let ownerStatus = await atm.checkOwnerStatus();
-      setOwnerStatus("Eligible Owner");
+      let ownerStatus = await atm.ownerStatus();
+      setOwnerStatus(ownerStatus);
     }
-  }
+  };
+
   const addition = async () => {
     if (atm) {
       const a = parseInt(inputA);
       const b = parseInt(inputB);
-      const result = await atm.addition(a,b);
+      let tx = await atm.addition(a, b, { gasLimit: 3000000 });
+      const receipt = await tx.wait();
+      const result = receipt.events.find(event => event.event === "AdditionResult").args.result.toNumber();
       setAdd(result);
     }
-}  
-const handleInputAChange = (event) => {
-  setInputA(event.target.value);
-};
+  };
 
-const handleInputBChange = (event) => {
-  setInputB(event.target.value);
-};
+  const handleInputAChange = (event) => {
+    setInputA(event.target.value);
+  };
 
+  const handleInputBChange = (event) => {
+    setInputB(event.target.value);
+  };
 
   const initUser = () => {
     // Check if user has Metamask
@@ -133,43 +136,44 @@ const handleInputBChange = (event) => {
       );
     }
 
-    if (balance == undefined) {
-      getBalance(account[0]);
+    if (balance === undefined) {
+      getBalance(account);
     }
 
     return (
-      <div class="overlay">
+      <div className="overlay">
         <p>Your Balance: {balance}</p>
         <p>Your Account: {account}</p>
         <p style={{ fontFamily: "Sans-serif" }}>Owner Name: {ownerName}</p>
-          <p style={{ fontFamily: "Sans-serif" }}>Owner City: {ownerCity}</p>
-          <p style={{ fontFamily: "Sans-serif" }}>Owner Status: {ownerStatus}</p>
+        <p style={{ fontFamily: "Sans-serif" }}>Owner City: {ownerCity}</p>
+        <p style={{ fontFamily: "Sans-serif" }}>Owner Status: {ownerStatus}</p>
         <button onClick={deposit}>Deposit 1 ETH</button>
         <button onClick={withdraw}>Withdraw 1 ETH</button>
         <button onClick={async () => {
-          alert((await atm.getBalanceFromWalletAddress(prompt("Wallet Address: "))).toNumber())
-        }}>Check Others Balance</button>
+          alert((await atm.getBalanceFromWalletAddress(prompt("Wallet Address: "))).toNumber());
+        }}>
+          Check Others Balance
+        </button>
         <h2>Calculator for Mathematics</h2>
-          <p style={{ fontFamily: "Sans-serif" }}>Add: {add ? add.toString() : ""}</p>
+        <p style={{ fontFamily: "Sans-serif" }}>Add: {add}</p>
 
-          <input
-            type="number"
-            placeholder="Enter the value of first variable A: "
-            value={inputA}
-            onChange={handleInputAChange} 
-            />
-          <input
-            type="number"
-            placeholder="Enter the value of the second variable B: "
-            value={inputB}
-            onChange={handleInputBChange} 
-            />
+        <input
+          type="number"
+          placeholder="Enter the value of first variable A: "
+          value={inputA}
+          onChange={handleInputAChange}
+        />
+        <input
+          type="number"
+          placeholder="Enter the value of the second variable B: "
+          value={inputB}
+          onChange={handleInputBChange}
+        />
 
-          <button style={{ backgroundColor: "yellow" }} onClick={addition}>
-            Add
-          </button>
+        <button style={{ backgroundColor: "yellow" }} onClick={addition}>
+          Add
+        </button>
       </div>
-      
     );
   };
 
@@ -182,7 +186,7 @@ const handleInputBChange = (event) => {
       <header>
         <h1>WELCOME TO MY ATM ** CRYPTO TECH **</h1>
         <p>Let's Crypto Tech</p>
-        <p>please select your Service :-</p>
+        <p>Please select your Service :-</p>
       </header>
       {initUser()}
       <style jsx>
@@ -191,7 +195,7 @@ const handleInputBChange = (event) => {
             text-align: center;
             background-color: beige;
             background-size: cover;
-            color:beige ;
+            color: beige;
             font-family: "Times New Roman", serif;
             border: 1px solid black;
             border-radius: 20px;
@@ -199,7 +203,7 @@ const handleInputBChange = (event) => {
             height: 900px;
             width: 1500px;
             opacity: 0.9;
-            font-weight: 950
+            font-weight: 950;
           }
 
           header {
@@ -210,13 +214,10 @@ const handleInputBChange = (event) => {
             font-family: "Arial", serif;
             font-size: 60px;
             margin-bottom: 20px;
-            font-weight: 700
           }
 
           p {
             font-size: 22px;
-            margin-bottom: 20px;
-            font-weight: 1000
           }
 
           button {
@@ -233,7 +234,6 @@ const handleInputBChange = (event) => {
           }
         `}
       </style>
-      
     </main>
   );
 }
