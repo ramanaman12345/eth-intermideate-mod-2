@@ -1,4 +1,6 @@
 ETH Intermediate Module 2: Smart Crypto Tech Contract Deployment
+
+
 Overview
 This project demonstrates the deployment of a smart contract on the Ethereum blockchain using Hardhat. It includes frontend integration to interact with the deployed contract for depositing and withdrawing ETH, and other functionalities.
 
