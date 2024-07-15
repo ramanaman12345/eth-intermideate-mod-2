@@ -1,53 +1,95 @@
-Write the code and create .sol, deploy.js, and index.js file.
+ETH Intermediate Module 2: Smart Crypto Tech Contract Deployment
+Overview
+This project demonstrates the deployment of a smart contract on the Ethereum blockchain using Hardhat. It includes frontend integration to interact with the deployed contract for depositing and withdrawing ETH, and other functionalities.
 
-Inside the project directory, in the terminal type:
-```npm i```
-Logic of the code
+Install dependencies:
 
-Write the license identifier and pragma solidity version.
+Copy code
+npm install
+Open two additional terminals in your VS Code.
 
-In the contract Assessment, declare two variables owner and balance of type address and unsigned int respectively.
+Start the local Ethereum network:
 
-Create two events Deposit_eth and Withdraw_eth with the amount to be deposited and withdrawn as its parameters.
+Copy code
+npx hardhat node
+Deploy the smart contract to the local network:
 
-Declare a payable constructor which initializes the owner as msg.sender and balance set to initial balance.
+arduino
+Copy code
+npx hardhat run --network localhost scripts/deploy.js
+Launch the frontend:
 
-The getBalance() function is declared pure and view only, which in turn returns the balance of the connected account.
+arduino
+Copy code
+npm run dev
+Open the browser and navigate to http://localhost:3000/.
 
-The deposit function is declared payable and public to interact with the metamask and front end. It takes the amount to be deposited as its parameter. The current balance is declared as the previous balance. It uses the require statement to verify that the msg.sender is the real owner. If this condition returns to true then the amount is added to the balance and the new balance is updated using the assert statement. At last, emit the Deposit_eth event.
+Connect your MetaMask wallet and perform transactions as required.
 
-The withdraw function is declared public and takes the amount to be withdrawn as its parameter. It uses the require statement to verify that the msg.sender is the real owner. The current balance is declared as the previous balance. If the balance is less than the withdrawn amount, the transaction reverts to the insufficient balance custom error. Else if not then the withdrawn amount is deducted from the current balance. The new balance is updated using the assert statement. At last, emit the Withdraw_eth event.
+Smart Contract Details
+Assessment.sol
+solidity
+Copy code
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-Additionally, there are three more functions named as ownerName(), ownerCity(), and ownerStatus() which are declared as public and pure. They return the name, city, and status of the owner of the account/transaction.
+contract Assessment {
+    address public owner;
+    uint public balance;
 
-Lastly, we have an addition function that is declared public and pure. It returns the summation of two unsigned integers.
+    event Deposit_eth(uint amount);
+    event Withdraw_eth(uint amount);
 
-Functionality of the code
+    constructor() payable {
+        owner = msg.sender;
+        balance = msg.value;
+    }
 
-Clone the module's repository into the working space of the gitpod.
+    function getBalance() public view returns (uint) {
+        return balance;
+    }
 
-Make three different terminals. In the first terminal type "npm i" to install the project dependencies. In the second terminal, type "npx hardhat node" which provides the accounts and private keys. In the third terminal, type "npm run dev" to start the front end at the localhost port 3000.
+    function deposit(uint amount) public payable {
+        require(msg.sender == owner, "Only owner can deposit");
+        uint previousBalance = balance;
+        balance += amount;
+        assert(balance == previousBalance + amount);
+        emit Deposit_eth(amount);
+    }
 
-Open the site. There we encounter the frontend user interface with the heading "Welcome to the Metacrafters ATM Transaction and Management System!".Also, we find the "connect to the metamask wallet". Click on it. There we find the account, balance of the account, name, city, and status of the current owner.
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        uint previousBalance = balance;
+        require(balance >= amount, "Insufficient balance");
+        balance -= amount;
+        assert(balance == previousBalance - amount);
+        emit Withdraw_eth(amount);
+    }
 
-Below it, click the deposit 1 eth or the withdraw 1 eth. There we get a notification from the metamask to confirm the transaction.
+    function ownerName() public pure returns (string memory) {
+        return "Raman";
+    }
 
-Also there is a Calculator for Mathematics. It requires two unsigned integers. After entering, click on add button, and refresh the page, we get the addition of the two unsigned integers.
+    function ownerCity() public pure returns (string memory) {
+        return "City";
+    }
 
-With this, the project is successfully completed satisfying all the conditions.
+    function ownerStatus() public pure returns (string memory) {
+        return "Active";
+    }
 
-Image of the Frontend
-()
-Open two additional terminals in your VS code
+    function addition(uint a, uint b) public pure returns (uint) {
+        return a + b;
+    }
+}
+Functionality
+Frontend Interface: Upon launching the frontend, you'll see "Welcome to the Metacrafters ATM Transaction and Management System!". Connect your MetaMask wallet to view account details.
 
-In the second terminal type: ```npx hardhat node```
+Deposit and Withdraw: Click on "Deposit 1 ETH" or "Withdraw 1 ETH" to interact with the contract. MetaMask will prompt you to confirm transactions.
 
-now in  third terminal, type: ```npx hardhat run --network localhost scripts/deploy.js```
+Calculator: Enter two unsigned integers in the calculator and click "Add". The result will be displayed upon refreshing the page.
 
-Again in the first terminal, type ```npm run dev``` , this will launch it in the front-end.
 
-Now click on localhost link shown in the terminal 
-Typically at http://localhost:3000/
-connect metamask wallet and perform the tasks.
 
-This was all about this project.
+Author
+Author: Raman
